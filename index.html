@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SWANLEE</title>
+        <meta charset="UTF-8" />
+        <script src="js/three.js"></script>
+        <script src="js/GLTFLoader.js"></script>
+        <script src="js/VRButton.js"></script>
+        <script src="js/OrbitControls.js"></script>
+        <script src="js/head-socket.js"></script>
+        <script src="components/objects/Aaron.js"></script>
+
+    </head>
+
+    <body>
+        <script>
+
+            let controls, group;
+
+            let container;
+            let camera, scene, renderer;
+            let rons;
+            let controller1, controller2;
+            let controllerGrip1, controllerGrip2;
+
+            let raycaster;
+
+            const intersected = [];
+            const tempMatrix = new THREE.Matrix4();
+
+            // var headSocket = new head.HeadSocket();
+
+            init();
+            animate();
+
+            var clock = new THREE.Clock();
+
+
+            function init() {
+
+            	container = document.createElement( 'div' );
+            	document.body.appendChild( container );
+
+            	scene = new THREE.Scene();
+            	scene.background = new THREE.Color( 0x18191A );
+              scene.fog = new THREE.Fog( 0x18191A, 0, 40 );
+              rons = new THREE.Group();
+              scene.add(rons)
+
+            	camera = new THREE.PerspectiveCamera( 80, window.innerWidth / window.innerHeight, 0.1, 100 );
+            	camera.position.set( 0, 0, 1);
+
+            	controls = new THREE.OrbitControls( camera, container );
+            	controls.target.set( 0, 0, 0 );
+              controls.autoRotate = true;
+              controls.autoRotateSpeed = 5;
+            	controls.update();
+
+            	// Configure lights
+
+            	const light1 = new THREE.DirectionalLight( 0x7268B0 );
+            	light1.position.set( 3, -1, 3 );
+            	light1.castShadow = true;
+            	scene.add( light1 );
+              const light2 = new THREE.DirectionalLight( 0xDC8CB0 );
+            	light2.position.set( 3, -1, -3 );
+            	light2.castShadow = true;
+            	scene.add( light2 );
+              const light3 = new THREE.DirectionalLight( 0x2DD220 );
+            	light3.position.set( -3, -1, -3 );
+            	light3.castShadow = true;
+            	scene.add( light3 );
+              const light4 = new THREE.DirectionalLight( 0xE721A0 );
+            	light4.position.set( -3, -1, 3 );
+            	light4.castShadow = true;
+            	scene.add( light4);
+
+            	const geometries = [
+            		new THREE.BoxGeometry( 0.2, 0.2, 0.2 ),
+            		new THREE.ConeGeometry( 0.2, 0.2, 64 ),
+            		new THREE.CylinderGeometry( 0.2, 0.2, 0.2, 64 ),
+            		new THREE.IcosahedronGeometry( 0.2, 8 ),
+            		new THREE.TorusGeometry( 0.2, 0.04, 64, 32 )
+            	];
+
+            	renderer = new THREE.WebGLRenderer( { antialias: true } );
+            	renderer.setPixelRatio( window.devicePixelRatio );
+            	renderer.setSize( window.innerWidth, window.innerHeight );
+            	renderer.outputEncoding = THREE.sRGBEncoding;
+            	renderer.shadowMap.enabled = true;
+            	renderer.xr.enabled = true;
+            	container.appendChild( renderer.domElement );
+
+            	document.body.appendChild( VRButton.createButton( renderer ) );
+
+            	const geometry = new THREE.BufferGeometry().setFromPoints( [ new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, - 1 ) ] );
+
+            	const line = new THREE.Line( geometry );
+            	line.name = 'line';
+            	line.scale.z = 5;
+
+            	raycaster = new THREE.Raycaster();
+
+            	window.addEventListener( 'resize', onWindowResize );
+
+              for (let y = -1; y <= 1; y += 1) {
+              	for ( let i = 0; i < 2 * Math.PI; i = i + (Math.PI / 4) ) {
+
+
+                  const ron = new Aaron(group);
+                  // scene.state.updateList.push(ron)
+
+              		// const geometry = geometries[ Math.floor( Math.random() * geometries.length ) ];
+              		const material = new THREE.MeshStandardMaterial( {
+              			color: Math.random() * 0xffffff,
+              			roughness: 0.7,
+              			metalness: 0.0
+              		} );
+
+              		// const object = new THREE.Mesh( geometry, material );
+
+              		ron.position.x = Math.cos(i)* 1.5
+              		ron.position.y = y * 2
+              		ron.position.z = Math.sin(i)* 1.5;
+              		// ron.position.z = Math.sin(i) * (1 - Math.abs(y)) * 3;
+
+              		ron.rotation.x = Math.PI/2;
+              		// ron.rotation.y = Math.random() * 2 * Math.PI;
+              		ron.rotation.z = i + Math.PI/2;
+
+              		ron.scale.setScalar( 4);
+                  ron.lookAt(0, ron.position.y, 0);
+
+              		ron.castShadow = true;
+              		ron.receiveShadow = true;
+
+
+              		rons.add( ron );
+
+
+              	}
+              }
+
+
+            }
+
+            function onWindowResize() {
+
+            	camera.aspect = window.innerWidth / window.innerHeight;
+            	camera.updateProjectionMatrix();
+
+            	renderer.setSize( window.innerWidth, window.innerHeight );
+
+            }
+
+            function animate() {
+            	renderer.setAnimationLoop( render );
+            }
+
+            var prevY = 0
+            function update() {
+              controls.update()
+              let timeStamp = clock.getElapsedTime();
+              for (let i = 0; i < rons.children.length; i++){
+                var newY = 0.1 * Math.sin(timeStamp * 4 + (i * 100));
+                var deltaY = newY - prevY;
+                rons.children[i].position.y += deltaY;
+                prevY = newY;
+                rons.children[i].rotation.y += 0.05;
+              }
+
+            }
+
+            function render() {
+              update()
+            	renderer.render( scene, camera );
+            }
+
+        </script>
+    </body>
+</html>
