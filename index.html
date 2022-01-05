@@ -162,11 +162,11 @@
               controls.update()
               let timeStamp = clock.getElapsedTime();
               for (let i = 0; i < rons.children.length; i++){
-                var newY = 0.1 * Math.sin(timeStamp * 4 + (i * 100));
+                var newY = 0.07 * Math.sin(timeStamp * 4 + (i * 100));
                 var deltaY = newY - prevY;
                 rons.children[i].position.y += deltaY;
                 prevY = newY;
-                rons.children[i].rotation.y += 0.05;
+                rons.children[i].rotation.y += 0.007;
               }
 
             }
