@@ -206,7 +206,7 @@
 
             function addHead(y, xz, voice, offset) {
               let radius = 1
-              let size = 3
+              let size = 5
 
               if ((y * 2) % 2 == 0){
                 radius = 2
@@ -217,11 +217,11 @@
 
               if ((y * 2 % 2) == 0) {
                 ron.position.x = Math.cos(xz + offset)* radius
-            		ron.position.y = y + 0.7
+            		ron.position.y = y + 1
             		ron.position.z = Math.sin(xz + offset)* radius
               } else {
                 ron.position.x = Math.cos(xz + offset + Math.PI / 6)* radius
-            		ron.position.y = y
+            		ron.position.y = y + 1
             		ron.position.z = Math.sin(xz + offset +  Math.PI / 6)* radius
               }
 
@@ -244,8 +244,8 @@
         			positionalAudio.setRefDistance( 1 );
         			positionalAudio.setDirectionalCone( 0, 180, 0.7 );
 
-              const helper = new THREE.PositionalAudioHelper( sound, 0.7 );
-        			positionalAudio.add( helper );
+              // const helper = new THREE.PositionalAudioHelper( sound, 0.7 );
+        			// positionalAudio.add( helper );
               // finally add the sound to the mesh
               ron.add( positionalAudio );
           		rons.add( ron );
