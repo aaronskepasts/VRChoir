@@ -167,7 +167,7 @@
               let timeStamp = clock.getElapsedTime();
               // add floating
               for (let i = 0; i < rons.children.length; i++){
-                rons.children[i].position.y += 0.01 *Math.sin(timeStamp**1.5 + prevY);
+                rons.children[i].position.y += 0.01 *Math.sin(timeStamp * (i + 1));
                 prevY = rons.children[i].position.y
               }
               if (((parseInt(timeStamp* 0.5)/head_counter) == 1) && head_counter < 7) {
