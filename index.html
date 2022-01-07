@@ -189,13 +189,6 @@
               let size = 2
               let y = 1
 
-              // if (counter % 2 == 0){
-              //   // radius = 0.5
-              //   y = y
-              // } else {
-              //   // radius = 1z
-              //
-              // }
               const ron = new Aaron(group);
 
               ron.position.x = Math.cos(xz)* radius
@@ -217,12 +210,14 @@
 
               const positionalAudio = new THREE.PositionalAudio( listener );
         			positionalAudio.setMediaElementSource( audioElement );
-        			positionalAudio.setRefDistance( 1 );
-        			positionalAudio.setDirectionalCone( 0, 180, 0.7 );
+        			positionalAudio.setRefDistance( 0.5 );
+        			positionalAudio.setDirectionalCone( 0, 180, 0.01 );
 
-              // const helper = new THREE.PositionalAudioHelper( sound, 0.7 );
+              // spatial audio helper
+              // const helper = new THREE.PositionalAudioHelper( sound, 0.01 );
         			// positionalAudio.add( helper );
-              // finally add the sound to the mesh
+
+              // add the sound to the mesh
               ron.add( positionalAudio );
           		rons.add( ron );
 
