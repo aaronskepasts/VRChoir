@@ -159,10 +159,10 @@
             	renderer.setAnimationLoop( render );
             }
 
-            var prevY = 0
             var head_xy = 0
             var head_counter = 1
             function update() {
+              var prevY = 0
               controls.update()
               let timeStamp = clock.getElapsedTime();
               // add floating
@@ -185,7 +185,7 @@
             function addHead(counter, xz, voice) {
               let radius = 1
               let size = 2
-              let y = 2
+              let y = 1.8
 
               const ron = new Aaron(group);
 
