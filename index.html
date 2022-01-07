@@ -128,13 +128,13 @@
               controls.update()
               let timeStamp = clock.getElapsedTime();
               // add floating
-              for (let i = 0; i < rons.children.length; i++){
-                var newY = 0.02 * Math.sin(timeStamp * 4 + (i * 100));
-                var deltaY = newY - prevY;
-                rons.children[i].position.y += deltaY;
-                prevY = newY;
-                // rons.children[i].rotation.y += 0.007;
-              }
+              // for (let i = 0; i < rons.children.length; i++){
+              //   var newY = 0.02 * Math.sin(timeStamp * 4 + (i * 100));
+              //   var deltaY = newY - prevY;
+              //   rons.children[i].position.y += deltaY;
+              //   prevY = newY;
+              //   // rons.children[i].rotation.y += 0.007;
+              // }
               if (((parseInt(timeStamp)/head_counter) == 1 || head_counter == 0) && head_y < 2) {
                 if (head_counter % 2 == 0) {
                   addHead(head_y, head_xy, "swan", 0)
@@ -187,11 +187,8 @@
               // } else {
               //   ron.rotdir = false
               // }
-          		rons.add( ron );
               let level = (y + 2)* 2
               let audio_file = 'sounds/' + voice + level + '.mp3'
-              console.log(audio_file);
-              // create the PositionalAudio object (passing in the listener)
               const sound = new THREE.PositionalAudio( listener );
 
               // load a sound and set it as the PositionalAudio object's buffer
@@ -204,6 +201,10 @@
               });
               // finally add the sound to the mesh
               ron.add( sound );
+          		rons.add( ron );
+              console.log(audio_file);
+              // create the PositionalAudio object (passing in the listener)
+
           	}
 
         </script>
