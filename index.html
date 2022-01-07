@@ -128,13 +128,13 @@
               controls.update()
               let timeStamp = clock.getElapsedTime();
               // add floating
-              // for (let i = 0; i < rons.children.length; i++){
-              //   var newY = 0.02 * Math.sin(timeStamp * 4 + (i * 100));
-              //   var deltaY = newY - prevY;
-              //   rons.children[i].position.y += deltaY;
-              //   prevY = newY;
-              //   // rons.children[i].rotation.y += 0.007;
-              // }
+              for (let i = 0; i < rons.children.length; i++){
+                var newY = 0.02 * Math.sin(timeStamp * 4 + (i * 100));
+                var deltaY = newY - prevY;
+                rons.children[i].position.y += deltaY;
+                prevY = newY;
+                // rons.children[i].rotation.y += 0.007;
+              }
               if (((parseInt(timeStamp)/head_counter) == 1 || head_counter == 0) && head_y < 2) {
                 if (head_counter % 2 == 0) {
                   addHead(head_y, head_xy, "swan", 0)
@@ -182,27 +182,22 @@
           		ron.castShadow = true;
           		ron.receiveShadow = true;
 
-              // if ((y * 2 % 2) == 0) {
-              //   ron.rotdir = true
-              // } else {
-              //   ron.rotdir = false
-              // }
               let level = (y + 2)* 2
               let audio_file = 'sounds/' + voice + level + '.mp3'
-              const sound = new THREE.PositionalAudio( listener );
-
-              // load a sound and set it as the PositionalAudio object's buffer
-              const audioLoader = new THREE.AudioLoader();
-              audioLoader.load( audio_file, function( buffer ) {
-              	sound.setBuffer( buffer );
-              	sound.setRefDistance( 0.1 );
-                sound.setDirectionalCone( 180, 230, 0.1 );
-              	sound.play();
-              });
+              // const sound = new THREE.PositionalAudio( listener );
+              //
+              // // load a sound and set it as the PositionalAudio object's buffer
+              // const audioLoader = new THREE.AudioLoader();
+              // audioLoader.load( audio_file, function( buffer ) {
+              // 	sound.setBuffer( buffer );
+              // 	sound.setRefDistance( 0.1 );
+              //   sound.setDirectionalCone( 180, 230, 0.1 );
+              // 	sound.play();
+              // });
               // finally add the sound to the mesh
-              ron.add( sound );
+              // ron.add( sound );
           		rons.add( ron );
-              console.log(audio_file);
+              // console.log(audio_file);
               // create the PositionalAudio object (passing in the listener)
 
           	}
