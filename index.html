@@ -171,7 +171,11 @@
                 prevY = rons.children[i].position.y
               }
               if (((parseInt(timeStamp* 0.5)/head_counter) == 1) && head_counter < 7) {
-                addHead(head_counter - 1, head_xy, "swan")
+                if (head_counter % 2) {
+                  addHead(head_counter - 1, head_xy, "swan")
+                } else {
+                  addHead(head_counter - 1, head_xy, "lee")
+                }
                 head_xy += Math.PI/3
                 head_counter += 1
               }
