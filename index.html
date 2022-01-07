@@ -160,7 +160,6 @@
             }
 
             var prevY = 0
-            var head_y = -2
             var head_xy = 0
             var head_counter = 0
             function update() {
@@ -172,17 +171,11 @@
                 var deltaY = newY - prevY;
                 rons.children[i].position.y += deltaY;
                 prevY = newY;
-                // rons.children[i].rotation.y += 0.007;
               }
-              if (((parseInt(timeStamp)/head_counter) == 1 || head_counter == 0) && head_y < 1) {
-                if (head_counter % 2 == 0) {
-                  addHead(head_y, head_xy, "swan")
-                } else {
-                  addHead(head_y, head_xy, "lee")
-                }
+              if (((parseInt(timeStamp)/head_counter) == 1 || head_counter == 0) && head_counter < 6) {
+                addHead(head_counter, head_xy, "swan")
                 head_xy += Math.PI/3
                 head_counter += 1
-                head_y += 0.5
               }
             }
 
@@ -191,26 +184,23 @@
             	renderer.render( scene, camera );
             }
 
-            function addHead(y, xz, voice) {
+            function addHead(counter, xz, voice) {
               let radius = 1
-              let size = 20
+              let size = 2
+              let y = 1
 
-              if ((y * 2) % 2 == 0){
-                radius = 8
-              } else {
-                radius = 5
-              }
+              // if (counter % 2 == 0){
+              //   // radius = 0.5
+              //   y = y
+              // } else {
+              //   // radius = 1z
+              //
+              // }
               const ron = new Aaron(group);
 
-              if ((y * 2 % 2) == 0) {
-                ron.position.x = Math.cos(xz)* radius
-            		ron.position.y = y + 1
-            		ron.position.z = Math.sin(xz)* radius
-              } else {
-                ron.position.x = Math.cos(xz)* radius
-            		ron.position.y = y + 1
-            		ron.position.z = Math.sin(xz)* radius
-              }
+              ron.position.x = Math.cos(xz)* radius
+          		ron.position.y = y
+          		ron.position.z = Math.sin(xz)* radius
 
           		ron.scale.setScalar( size);
               ron.lookAt(0, ron.position.y, 0);
@@ -218,9 +208,8 @@
           		ron.castShadow = true;
           		ron.receiveShadow = true;
 
-              let level = (y + 2)* 2
-              let name = voice + level
-              let audio_file = 'sounds/' + name + '.mp3'
+              let name = voice + counter
+              let audio_file = 'sounds/' + counter + '.mp3'
 
               const audioElement = document.getElementById( name );
 			        audioElement.play();
@@ -236,8 +225,6 @@
               // finally add the sound to the mesh
               ron.add( positionalAudio );
           		rons.add( ron );
-              // console.log(audio_file);
-              // create the PositionalAudio object (passing in the listener)
 
           	}
 
