@@ -161,19 +161,17 @@
 
             var prevY = 0
             var head_xy = 0
-            var head_counter = 0
+            var head_counter = 1
             function update() {
               controls.update()
               let timeStamp = clock.getElapsedTime();
               // add floating
               for (let i = 0; i < rons.children.length; i++){
-                var newY = 0.02 * Math.sin(timeStamp * 4 + (i * 100));
-                var deltaY = newY - prevY;
-                rons.children[i].position.y += deltaY;
-                prevY = newY;
+                rons.children[i].position.y += 0.01 *Math.sin(timeStamp**1.5 + prevY);
+                prevY = rons.children[i].position.y
               }
-              if (((parseInt(timeStamp)/head_counter) == 1 || head_counter == 0) && head_counter < 6) {
-                addHead(head_counter, head_xy, "swan")
+              if (((parseInt(timeStamp* 0.5)/head_counter) == 1) && head_counter < 7) {
+                addHead(head_counter - 1, head_xy, "swan")
                 head_xy += Math.PI/3
                 head_counter += 1
               }
