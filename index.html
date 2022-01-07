@@ -10,12 +10,63 @@
         <script src="js/GLTFLoader.js"></script>
         <script src="js/VRButton.js"></script>
         <script src="js/OrbitControls.js"></script>
+        <script src="js/PositionalAudioHelper.js"></script>
         <script src="js/head-socket.js"></script>
         <script src="components/objects/Aaron.js"></script>
 
     </head>
 
     <body>
+
+    	<audio loop id="swan0" preload="auto" style="display: none">
+    		<source src="sounds/swan0.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="swan1" preload="auto" style="display: none">
+    		<source src="sounds/swan1.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="swan2" preload="auto" style="display: none">
+    		<source src="sounds/swan2.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="swan3" preload="auto" style="display: none">
+    		<source src="sounds/swan3.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="swan4" preload="auto" style="display: none">
+    		<source src="sounds/swan4.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="swan5" preload="auto" style="display: none">
+    		<source src="sounds/swan5.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="swan6" preload="auto" style="display: none">
+    		<source src="sounds/swan6.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="swan7" preload="auto" style="display: none">
+    		<source src="sounds/swan7.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="lee0" preload="auto" style="display: none">
+    		<source src="sounds/lee0.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="lee1" preload="auto" style="display: none">
+    		<source src="sounds/lee1.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="lee2" preload="auto" style="display: none">
+    		<source src="sounds/lee2.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="lee3" preload="auto" style="display: none">
+    		<source src="sounds/lee3.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="lee4" preload="auto" style="display: none">
+    		<source src="sounds/lee4.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="lee5" preload="auto" style="display: none">
+    		<source src="sounds/lee5.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="lee6" preload="auto" style="display: none">
+    		<source src="sounds/lee6.mp3" type="audio/mpeg">
+    	</audio>
+      <audio loop id="lee7" preload="auto" style="display: none">
+    		<source src="sounds/lee7.mp3" type="audio/mpeg">
+    	</audio>
+
       <div id="overlay">
 		<button id="startButton">Play</button>
 	</div>
@@ -135,7 +186,7 @@
                 prevY = newY;
                 // rons.children[i].rotation.y += 0.007;
               }
-              if (((parseInt(timeStamp)/head_counter) == 1 || head_counter == 0) && head_y < 2) {
+              if (((parseInt(timeStamp)/head_counter) == 1 || head_counter == 0) && head_y < 1) {
                 if (head_counter % 2 == 0) {
                   addHead(head_y, head_xy, "swan", 0)
                 }
@@ -144,9 +195,7 @@
                   head_xy += Math.PI/3
                 }
                 head_counter += 1
-                if (head_counter % 6 == 0) {
-                  head_y += 0.5
-                }
+                head_y += 0.5
               }
             }
 
@@ -168,7 +217,7 @@
 
               if ((y * 2 % 2) == 0) {
                 ron.position.x = Math.cos(xz + offset)* radius
-            		ron.position.y = y
+            		ron.position.y = y + 0.7
             		ron.position.z = Math.sin(xz + offset)* radius
               } else {
                 ron.position.x = Math.cos(xz + offset + Math.PI / 6)* radius
@@ -183,19 +232,22 @@
           		ron.receiveShadow = true;
 
               let level = (y + 2)* 2
-              let audio_file = 'sounds/' + voice + level + '.mp3'
-              // const sound = new THREE.PositionalAudio( listener );
-              //
-              // // load a sound and set it as the PositionalAudio object's buffer
-              // const audioLoader = new THREE.AudioLoader();
-              // audioLoader.load( audio_file, function( buffer ) {
-              // 	sound.setBuffer( buffer );
-              // 	sound.setRefDistance( 0.1 );
-              //   sound.setDirectionalCone( 180, 230, 0.1 );
-              // 	sound.play();
-              // });
+              let name = voice + level
+              let audio_file = 'sounds/' + name + '.mp3'
+
+              const audioElement = document.getElementById( name );
+			        audioElement.play();
+              const sound = new THREE.PositionalAudio( listener );
+
+              const positionalAudio = new THREE.PositionalAudio( listener );
+        			positionalAudio.setMediaElementSource( audioElement );
+        			positionalAudio.setRefDistance( 1 );
+        			positionalAudio.setDirectionalCone( 0, 180, 0.7 );
+
+              const helper = new THREE.PositionalAudioHelper( sound, 0.7 );
+        			positionalAudio.add( helper );
               // finally add the sound to the mesh
-              // ron.add( sound );
+              ron.add( positionalAudio );
           		rons.add( ron );
               // console.log(audio_file);
               // create the PositionalAudio object (passing in the listener)
