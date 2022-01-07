@@ -36,12 +36,6 @@
       <audio loop id="swan5" preload="auto" style="display: none">
     		<source src="sounds/swan5.mp3" type="audio/mpeg">
     	</audio>
-      <audio loop id="swan6" preload="auto" style="display: none">
-    		<source src="sounds/swan6.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="swan7" preload="auto" style="display: none">
-    		<source src="sounds/swan7.mp3" type="audio/mpeg">
-    	</audio>
       <audio loop id="lee0" preload="auto" style="display: none">
     		<source src="sounds/lee0.mp3" type="audio/mpeg">
     	</audio>
@@ -59,12 +53,6 @@
     	</audio>
       <audio loop id="lee5" preload="auto" style="display: none">
     		<source src="sounds/lee5.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="lee6" preload="auto" style="display: none">
-    		<source src="sounds/lee6.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="lee7" preload="auto" style="display: none">
-    		<source src="sounds/lee7.mp3" type="audio/mpeg">
     	</audio>
 
       <div id="overlay">
@@ -188,12 +176,11 @@
               }
               if (((parseInt(timeStamp)/head_counter) == 1 || head_counter == 0) && head_y < 1) {
                 if (head_counter % 2 == 0) {
-                  addHead(head_y, head_xy, "swan", 0)
+                  addHead(head_y, head_xy, "swan")
+                } else {
+                  addHead(head_y, head_xy, "lee")
                 }
-                else {
-                  addHead(head_y, head_xy, "lee", Math.PI)
-                  head_xy += Math.PI/3
-                }
+                head_xy += Math.PI/3
                 head_counter += 1
                 head_y += 0.5
               }
@@ -204,25 +191,25 @@
             	renderer.render( scene, camera );
             }
 
-            function addHead(y, xz, voice, offset) {
+            function addHead(y, xz, voice) {
               let radius = 1
-              let size = 5
+              let size = 20
 
               if ((y * 2) % 2 == 0){
-                radius = 2
+                radius = 8
               } else {
-                radius = 1
+                radius = 5
               }
               const ron = new Aaron(group);
 
               if ((y * 2 % 2) == 0) {
-                ron.position.x = Math.cos(xz + offset)* radius
+                ron.position.x = Math.cos(xz)* radius
             		ron.position.y = y + 1
-            		ron.position.z = Math.sin(xz + offset)* radius
+            		ron.position.z = Math.sin(xz)* radius
               } else {
-                ron.position.x = Math.cos(xz + offset + Math.PI / 6)* radius
+                ron.position.x = Math.cos(xz)* radius
             		ron.position.y = y + 1
-            		ron.position.z = Math.sin(xz + offset +  Math.PI / 6)* radius
+            		ron.position.z = Math.sin(xz)* radius
               }
 
           		ron.scale.setScalar( size);
