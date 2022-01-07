@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>SWANLEE</title>
+        <title>VRChoir</title>
         <meta charset="UTF-8" />
+    		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    		<link type="text/css" rel="stylesheet" href="main.css">
+
         <script src="js/three.js"></script>
         <script src="js/GLTFLoader.js"></script>
         <script src="js/VRButton.js"></script>
@@ -13,25 +16,32 @@
     </head>
 
     <body>
+      <div id="overlay">
+		<button id="startButton">Play</button>
+	</div>
         <script>
 
             let controls, group;
 
             let container;
-            let camera, scene, renderer;
+            let camera, scene, renderer, clock, listener;
             let rons;
             let controller1, controller2;
             let controllerGrip1, controllerGrip2;
 
             let raycaster;
 
-            var clock = new THREE.Clock();
 
-            init();
-            animate();
+            const startButton = document.getElementById( 'startButton' );
+            startButton.addEventListener( 'click', init );
 
 
             function init() {
+
+        			const overlay = document.getElementById( 'overlay' );
+        			overlay.remove();
+
+              clock = new THREE.Clock();
 
             	container = document.createElement( 'div' );
             	document.body.appendChild( container );
@@ -91,10 +101,10 @@
 
             	window.addEventListener( 'resize', onWindowResize );
 
-              // addHead(0, 0)
+              listener = new THREE.AudioListener()
+              camera.add( listener )
 
-
-
+              animate();
             }
 
             function onWindowResize() {
@@ -138,8 +148,6 @@
                   head_y += 0.5
                 }
               }
-              // add heads
-
             }
 
             function render() {
@@ -150,9 +158,6 @@
             function addHead(y, xz, voice, offset) {
               let radius = 1
               let size = 3
-
-              // for (let y = -2; y <= 2; y += 0.5) {
-              // 	for ( let i = 0; i < 2 * Math.PI - 0.1; i = i + (Math.PI / 3) ) {
 
               if ((y * 2) % 2 == 0){
                 radius = 2
@@ -183,6 +188,22 @@
               //   ron.rotdir = false
               // }
           		rons.add( ron );
+              let level = (y + 2)* 2
+              let audio_file = 'sounds/' + voice + level + '.mp3'
+              console.log(audio_file);
+              // create the PositionalAudio object (passing in the listener)
+              const sound = new THREE.PositionalAudio( listener );
+
+              // load a sound and set it as the PositionalAudio object's buffer
+              const audioLoader = new THREE.AudioLoader();
+              audioLoader.load( audio_file, function( buffer ) {
+              	sound.setBuffer( buffer );
+              	sound.setRefDistance( 0.1 );
+                sound.setDirectionalCone( 180, 230, 0.1 );
+              	sound.play();
+              });
+              // finally add the sound to the mesh
+              ron.add( sound );
           	}
 
         </script>
