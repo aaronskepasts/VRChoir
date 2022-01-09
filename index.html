@@ -160,21 +160,21 @@
             }
 
             var head_xy = 0
+            var head_y = 0
             var head_counter = 1
             function update() {
-              var prevY = 0
               controls.update()
               let timeStamp = clock.getElapsedTime();
               // add floating
+              head_y = 0.5*Math.sin(timeStamp) + 1;
               for (let i = 0; i < rons.children.length; i++){
-                rons.children[i].position.y += 0.01 *Math.sin(timeStamp * (i + 1));
-                prevY = rons.children[i].position.y
+                rons.children[i].position.y = head_y;
               }
               if (((parseInt(timeStamp* 0.5)/head_counter) == 1) && head_counter < 7) {
                 if (head_counter % 2) {
-                  addHead(head_counter - 1, head_xy, "swan")
+                  addHead(head_counter - 1, head_y, head_xy, "swan")
                 } else {
-                  addHead(head_counter - 1, head_xy, "lee")
+                  addHead(head_counter - 1, head_y, head_xy, "lee")
                 }
                 head_xy += Math.PI/3
                 head_counter += 1
@@ -186,10 +186,9 @@
             	renderer.render( scene, camera );
             }
 
-            function addHead(counter, xz, voice) {
+            function addHead(counter, y, xz, voice) {
               let radius = 1
               let size = 2
-              let y = 1
 
               const ron = new Aaron(group);
 
