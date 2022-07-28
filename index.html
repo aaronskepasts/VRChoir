@@ -1,229 +1,276 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>VRChoir</title>
-        <meta charset="UTF-8" />
-    		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    		<link type="text/css" rel="stylesheet" href="main.css">
+  <head>
+    <title>VRChoir</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
 
-        <script src="js/three.js"></script>
-        <script src="js/GLTFLoader.js"></script>
-        <script src="js/VRButton.js"></script>
-        <script src="js/OrbitControls.js"></script>
-        <script src="js/PositionalAudioHelper.js"></script>
-        <script src="js/head-socket.js"></script>
-        <script src="components/objects/Aaron.js"></script>
+    <script src="js/three.js"></script>
+    <script src="js/GLTFLoader.js"></script>
+    <script src="js/VRButton.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <script src="js/PositionalAudioHelper.js"></script>
+    <script src="js/head-socket.js"></script>
+    <script src="components/objects/Aaron.js"></script>
 
-    </head>
+    <!-- Tone.js -->
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.4.9/Tone.js"></script-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.58/Tone.js" integrity="sha512-QhmI/idBFIq3hd9NsBFF8y6i5ziFjZP1bea5/J7piTjn6duaZ1LPsFuo26nTXeE1l98vOtXdNkHSzxVDmqVneg==" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <!-- <div id="overlay">
+      <button id="startButton">Play</button>
+    </div> -->
+    <script>
 
-    <body>
+      let controls, group;
 
-    	<audio loop id="swan0" preload="auto" style="display: none">
-    		<source src="sounds/swan0.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="swan1" preload="auto" style="display: none">
-    		<source src="sounds/swan1.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="swan2" preload="auto" style="display: none">
-    		<source src="sounds/swan2.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="swan3" preload="auto" style="display: none">
-    		<source src="sounds/swan3.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="swan4" preload="auto" style="display: none">
-    		<source src="sounds/swan4.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="swan5" preload="auto" style="display: none">
-    		<source src="sounds/swan5.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="lee0" preload="auto" style="display: none">
-    		<source src="sounds/lee0.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="lee1" preload="auto" style="display: none">
-    		<source src="sounds/lee1.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="lee2" preload="auto" style="display: none">
-    		<source src="sounds/lee2.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="lee3" preload="auto" style="display: none">
-    		<source src="sounds/lee3.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="lee4" preload="auto" style="display: none">
-    		<source src="sounds/lee4.mp3" type="audio/mpeg">
-    	</audio>
-      <audio loop id="lee5" preload="auto" style="display: none">
-    		<source src="sounds/lee5.mp3" type="audio/mpeg">
-    	</audio>
+      let container;
+      let camera, scene, renderer, clock, listener;
+      let heads;
+      let controller1, controller2;
+      let controllerGrip1, controllerGrip2;
 
-      <div id="overlay">
-		<button id="startButton">Play</button>
-	</div>
-        <script>
+      let raycaster;
+      
+      
+      let headCounter;
+      let smallSize;
+      let bigSize;
+      let positionMap;
+      let updateList = []
+      let t
+      const startingPositions = [
+          [1.75, 1.25, 1.75],
+          [-1.75, 1.25, -1.75],
+          [1.75, 1.25, -1.75],
+          [-1.75, 1.25, 1.75],
+          [0, 1.25, 2],
+          [0, 1.25, -2],
+          [2, 1, 0],
+          [-2, 1, 0],
+          [0, 5, 9],
+          [0, 5, -9],
+          [-9, 5, 0],
+          [9, 5, 0]
+        ]
 
-            let controls, group;
+      let stagelights = []
+      let headlights = []
 
-            let container;
-            let camera, scene, renderer, clock, listener;
-            let rons;
-            let controller1, controller2;
-            let controllerGrip1, controllerGrip2;
-
-            let raycaster;
+      // const startButton = document.getElementById( 'startButton' );
+      // startButton.addEventListener( 'click', init );
+      init()
 
 
-            const startButton = document.getElementById( 'startButton' );
-            startButton.addEventListener( 'click', init );
+      function init() {
+
+        t = 0
+        
+
+        // const overlay = document.getElementById( 'overlay' );
+        // overlay.remove();
+
+        clock = new THREE.Clock();
+
+        container = document.createElement( 'div' );
+        document.body.appendChild( container );
+
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color( 0x0f0f0f );
+        scene.fog = new THREE.Fog( 0x0f0f0f, 0, 40 );
+        heads = new THREE.Group();
+        scene.add(heads)
+
+        const geoFloor = new THREE.BoxGeometry( 5, 100, 5 );
+        const matStdFloor = new THREE.MeshStandardMaterial( { color: 0x808080, roughness: 0, metalness: 0 } );
+        const mshStdFloor = new THREE.Mesh( geoFloor, matStdFloor );
+        mshStdFloor.receiveShadow = true
+        mshStdFloor.position.y = -50
+        scene.add( mshStdFloor );
+
+        camera = new THREE.PerspectiveCamera( 80, window.innerWidth / window.innerHeight, 0.1, 100 );
+        camera.position.set( -0.1, 1, -0.1);
+
+        controls = new THREE.OrbitControls( camera, container );
+        controls.target.set( 0, 1, 0 );
+        controls.autoRotate = false;
+        controls.autoRotateSpeed = 5;
+        controls.update();
+
+        const ambient = new THREE.AmbientLight( 0xffffff, 0.1 );
+				scene.add( ambient );
 
 
-            function init() {
+        
+        // lights for small heads/stage
+        stagelights.push(newSpotlight(0x2DD220, [-3, 10, 3], 0.3, 0.1, [1.75, 1, -1.75]))
+        stagelights.push(newSpotlight(0xE721A0, [3, 10, -3], 0.3, 0.1, [-1.75, 1, 1.75]))
+        stagelights.push(newSpotlight(0x7268B0, [-3, 10, -3], 0.3, 0.1, [1.75, 1, 1.75]))
+        stagelights.push(newSpotlight(0xDC8CB0, [3, 10, 3], 0.3, 0.1, [-1.75, 1, -1.75]))
+        
+        // lights for big heads
+        headlights.push(newSpotlight(0x28a99e, [0, 5, -9], 0.5, 0.5, [0,5,9]))
+        headlights.push(newSpotlight(0xFF5733, [0, 5, 9], 0.5, 0.5, [0,5,-9]))
+        headlights.push(newSpotlight(0x0F00FE, [-9, 5, 0], 0.5, 0.5, [9,5,0]))
+        headlights.push(newSpotlight(0x3EFF15, [9, 5, 0], 0.5, 0.5, [-9,5,0]))
+      
+        // heads section
+        headCounter = 0
+        smallSize = 5
+        bigSize = 30
 
-        			const overlay = document.getElementById( 'overlay' );
-        			overlay.remove();
+        renderer = new THREE.WebGLRenderer( { antialias: true } );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.shadowMap.enabled = true;
+        renderer.xr.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild( renderer.domElement );
 
-              clock = new THREE.Clock();
+        document.body.appendChild( VRButton.createButton( renderer ) );
 
-            	container = document.createElement( 'div' );
-            	document.body.appendChild( container );
+        raycaster = new THREE.Raycaster();
 
-            	scene = new THREE.Scene();
-            	scene.background = new THREE.Color( 0x0f0f0f );
-              scene.fog = new THREE.Fog( 0x0f0f0f, 0, 40 );
-              rons = new THREE.Group();
-              scene.add(rons)
+        window.addEventListener( 'resize', onWindowResize );
 
-            	camera = new THREE.PerspectiveCamera( 80, window.innerWidth / window.innerHeight, 0.1, 100 );
-            	camera.position.set( 0, 0, 1);
+        listener = new THREE.AudioListener()
+        camera.add( listener )
 
-            	controls = new THREE.OrbitControls( camera, container );
-            	controls.target.set( 0, 0, 0 );
-              controls.autoRotate = true;
-              controls.autoRotateSpeed = 5;
-            	controls.update();
+        animate();
+        
+      
+      }
 
-            	// Configure lights
-            	const light1 = new THREE.DirectionalLight( 0x7268B0 );
-            	light1.position.set( 3, -1, 3 );
-            	light1.castShadow = true;
-            	scene.add( light1 );
-              const light2 = new THREE.DirectionalLight( 0xDC8CB0 );
-            	light2.position.set( 3, -1, -3 );
-            	light2.castShadow = true;
-            	scene.add( light2 );
-              const light3 = new THREE.DirectionalLight( 0x2DD220 );
-            	light3.position.set( -3, -1, -3 );
-            	light3.castShadow = true;
-            	scene.add( light3 );
-              const light4 = new THREE.DirectionalLight( 0xE721A0 );
-            	light4.position.set( -3, -1, 3 );
-            	light4.castShadow = true;
-            	scene.add( light4);
+      function newSpotlight(color, pos, angle, penumbra, obj_pos) {
+        spotlight = new THREE.SpotLight( color, 2 );
+				spotlight.position.set( pos[0], pos[1],  pos[2]);
+				spotlight.angle = angle
+				spotlight.penumbra = penumbra;
+				spotlight.decay = 1;
+				spotlight.distance = 20;
+				spotlight.castShadow = true;
+				spotlight.shadow.mapSize.width = 512;
+				spotlight.shadow.mapSize.height = 512;
+				spotlight.shadow.camera.near = 0.1;
+				spotlight.shadow.camera.far = 200;
+				spotlight.shadow.focus = 1;
+				scene.add( spotlight );
+        scene.add(spotlight.target)
+        const targetObject = new THREE.Object3D();
+        targetObject.position.set(obj_pos[0], obj_pos[1], obj_pos[2])
+        scene.add(targetObject)
+        spotlight.target = targetObject
+        return [spotlight, targetObject]
+      }
 
-            	const geometries = [
-            		new THREE.BoxGeometry( 0.2, 0.2, 0.2 ),
-            		new THREE.ConeGeometry( 0.2, 0.2, 64 ),
-            		new THREE.CylinderGeometry( 0.2, 0.2, 0.2, 64 ),
-            		new THREE.IcosahedronGeometry( 0.2, 8 ),
-            		new THREE.TorusGeometry( 0.2, 0.04, 64, 32 )
-            	];
+      function isUnique(a, p) {
+        for (let point of a) {
+          console.log(point.x, p.x, point.y, p.y, point.z, p.z)
+          if (point.x == p.x && point.y == p.y && point.z == p.z) {
+            return false
+          }
+        }
+        return true
+      }
 
-            	renderer = new THREE.WebGLRenderer( { antialias: true } );
-            	renderer.setPixelRatio( window.devicePixelRatio );
-            	renderer.setSize( window.innerWidth, window.innerHeight );
-            	renderer.outputEncoding = THREE.sRGBEncoding;
-            	renderer.shadowMap.enabled = true;
-            	renderer.xr.enabled = true;
-            	container.appendChild( renderer.domElement );
+      function onWindowResize() {
 
-            	document.body.appendChild( VRButton.createButton( renderer ) );
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
 
-            	raycaster = new THREE.Raycaster();
+        renderer.setSize( window.innerWidth, window.innerHeight );
 
-            	window.addEventListener( 'resize', onWindowResize );
+      }
 
-              listener = new THREE.AudioListener()
-              camera.add( listener )
+      function animate() {
+        renderer.setAnimationLoop( render );
+      }
 
-              animate();
-            }
+      var head_xy = 0
+      var head_y = 0
+      function update() {
+        controls.update()
 
-            function onWindowResize() {
+        if (clock.getElapsedTime() > 1 && headCounter<8) {
+          if (headCounter % 2) {
+            addHead(smallSize, "lee")
+            clock.elapsedTime = -1
+          } else {
+            addHead(smallSize, "swan")
+            clock.elapsedTime = 0
+          }
+        }
+        if (clock.getElapsedTime() > 1 && headCounter>=8 && headCounter < 12) {
+          if (headCounter % 2) {
+            addHead(bigSize, "lee")
+            clock.elapsedTime = -1
+          } else {
+            addHead(bigSize, "swan")
+            clock.elapsedTime = 0
+          }
+        }
+        for (const head of updateList) {
+          head.update()
+        }
 
-            	camera.aspect = window.innerWidth / window.innerHeight;
-            	camera.updateProjectionMatrix();
+        if (headCounter >= 12) {
+          t += 0.01
+          for (let i = 8; i < 12; i++) {
+            let x = updateList[i].position.x
+            let z = updateList[i].position.z
+            updateList[i].position.x = x * Math.cos(0.01) + z * Math.sin(0.01)
+            updateList[i].position.z = z * Math.cos(0.01) - x * Math.sin(0.01)
+            updateList[i].lookAt(0, updateList[i].position.y-0.5, 0);
+          }
+        }
+        
+        
+      }
 
-            	renderer.setSize( window.innerWidth, window.innerHeight );
+      function render() {
+        update()
+        renderer.render( scene, camera );
+      }
 
-            }
+      function addHead(size, voice) {
+      
+        let radius = 1
+        const ron = new Aaron(group);
 
-            function animate() {
-            	renderer.setAnimationLoop( render );
-            }
+        ron.position.x = startingPositions[headCounter][0]
+        ron.position.y = startingPositions[headCounter][1]
+        ron.position.z = startingPositions[headCounter][2]
 
-            var head_xy = 0
-            var head_y = 0
-            var head_counter = 1
-            function update() {
-              controls.update()
-              let timeStamp = clock.getElapsedTime();
-              // add floating
-              head_y = 0.5*Math.sin(timeStamp) + 1;
-              for (let i = 0; i < rons.children.length; i++){
-                rons.children[i].position.y = head_y;
-              }
-              if (((parseInt(timeStamp* 0.5)/head_counter) == 1) && head_counter < 7) {
-                if (head_counter % 2) {
-                  addHead(head_counter - 1, head_y, head_xy, "swan")
-                } else {
-                  addHead(head_counter - 1, head_y, head_xy, "lee")
-                }
-                head_xy += Math.PI/3
-                head_counter += 1
-              }
-            }
+        ron.scale.setScalar(size);
+        ron.lookAt(0, ron.position.y-0.5, 0);
 
-            function render() {
-              update()
-            	renderer.render( scene, camera );
-            }
+        ron.castShadow = true;
+        ron.receiveShadow = true;
 
-            function addHead(counter, y, xz, voice) {
-              let radius = 1
-              let size = 2
+        let name = voice + parseInt(headCounter/2).toString()
+        let audio_file = 'sounds/' + name + '.mp3'
 
-              const ron = new Aaron(group);
+        var audioElement = new Audio(audio_file);
+        audioElement.play()
 
-              ron.position.x = Math.cos(xz)* radius
-          		ron.position.y = y
-          		ron.position.z = Math.sin(xz)* radius
+        const positionalAudio = new THREE.PositionalAudio( listener );
+        positionalAudio.setMediaElementSource( audioElement );
+        positionalAudio.setRefDistance( 2*size );
+        positionalAudio.setDirectionalCone( 10,90, 0.5)
+        // spatial audio helper
+        const helper = new THREE.PositionalAudioHelper( positionalAudio, 1 );
+        positionalAudio.add( helper );
+        helper.visible = false
 
-          		ron.scale.setScalar( size);
-              ron.lookAt(0, ron.position.y, 0);
-
-          		ron.castShadow = true;
-          		ron.receiveShadow = true;
-
-              let name = voice + counter
-              let audio_file = 'sounds/' + counter + '.mp3'
-
-              const audioElement = document.getElementById( name );
-			        audioElement.play();
-              const sound = new THREE.PositionalAudio( listener );
-
-              const positionalAudio = new THREE.PositionalAudio( listener );
-        			positionalAudio.setMediaElementSource( audioElement );
-        			positionalAudio.setRefDistance( 0.5 );
-        			positionalAudio.setDirectionalCone( 0, 180, 0.01 );
-
-              // spatial audio helper
-              // const helper = new THREE.PositionalAudioHelper( sound, 0.01 );
-        			// positionalAudio.add( helper );
-
-              // add the sound to the mesh
-              ron.add( positionalAudio );
-          		rons.add( ron );
-
-          	}
-
-        </script>
-    </body>
+        // add the sound to the mesh
+        ron.add( positionalAudio );
+        heads.add( ron );  
+        headCounter++
+        updateList.push(ron)  
+      }
+    </script>
+  </body>
 </html>
