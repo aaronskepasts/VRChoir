@@ -19,9 +19,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.58/Tone.js" integrity="sha512-QhmI/idBFIq3hd9NsBFF8y6i5ziFjZP1bea5/J7piTjn6duaZ1LPsFuo26nTXeE1l98vOtXdNkHSzxVDmqVneg==" crossorigin="anonymous"></script>
   </head>
   <body>
-    <!-- <div id="overlay">
+    <div id="overlay">
       <button id="startButton">Play</button>
-    </div> -->
+    </div>
     <script>
 
       let controls, group;
@@ -59,9 +59,9 @@
       let stagelights = []
       let headlights = []
 
-      // const startButton = document.getElementById( 'startButton' );
-      // startButton.addEventListener( 'click', init );
-      init()
+      const startButton = document.getElementById( 'startButton' );
+      startButton.addEventListener( 'click', init );
+      // init()
 
 
       function init() {
@@ -69,8 +69,8 @@
         t = 0
         
 
-        // const overlay = document.getElementById( 'overlay' );
-        // overlay.remove();
+        const overlay = document.getElementById( 'overlay' );
+        overlay.remove();
 
         clock = new THREE.Clock();
 
