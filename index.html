@@ -40,7 +40,8 @@
       let bigSize;
       let positionMap;
       let updateList = []
-      let t
+      let lees = []
+      let swans = []
       const startingPositions = [
           [1.75, 1.25, 1.75],
           [-1.75, 1.25, -1.75],
@@ -138,6 +139,7 @@
         camera.add( listener )
 
         loadHeads();
+        loadAudio();
         animate();
         
       
@@ -147,6 +149,21 @@
         for (let i = 0; i < 12; i++) {
           let head = new Aaron(group)
           updateList.push(head)
+        }
+      }
+
+      function loadAudio() {
+        for (let i = 0; i < 6; i++) {
+          let lee = 'sounds/lee' + i + '.mp3'
+          let lee_i = new Audio(lee)
+          console.log(lee);
+          lee_i.pause()
+          lees.push(lee_i)
+          let swan = 'sounds/swan' + i + '.mp3'
+          console.log(swan);
+          let swan_i = new Audio(swan)
+          swan_i.pause()
+          swans.push(swan_i)
         }
       }
 
@@ -183,10 +200,8 @@
       }
 
       function onWindowResize() {
-
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-
         renderer.setSize( window.innerWidth, window.innerHeight );
 
       }
@@ -232,8 +247,6 @@
             updateList[i].lookAt(0, updateList[i].position.y-0.5, 0);
           }
         }
-        
-        
       }
 
       function render() {
@@ -259,10 +272,14 @@
         ron.castShadow = true;
         ron.receiveShadow = true;
 
-        let name = voice + parseInt(headCounter/2).toString()
-        let audio_file = 'sounds/' + name + '.mp3'
-
-        var audioElement = new Audio(audio_file);
+        // let name = voice + parseInt(headCounter/2).toString()
+        // let audio_file = 'sounds/' + name + '.mp3'
+        let audioElement;
+        if (voice == 'swan') {
+          audioElement = swans[parseInt(headCounter/2)]
+        } else {
+          audioElement = lees[parseInt(headCounter/2)]
+        }
         audioElement.play()
 
         const positionalAudio = new THREE.PositionalAudio( listener );
