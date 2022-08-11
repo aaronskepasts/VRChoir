@@ -8,9 +8,9 @@ class Aaron extends THREE.Group {
         // Init state
         this.state = {
             // gui: parent.state.gui,
-            bob: true,
+            bob: false,
             spin: this.spin.bind(this),
-            twirl: 1,
+            twirl: 0,
         };
 
         // Load object
@@ -72,7 +72,7 @@ class Aaron extends THREE.Group {
       //     // Bob back and forth
       //     this.rotation.z = 0.05 * Math.sin(timeStamp / 300);
       // }
-      if (this.state.twirl > 0) {
+      if (this.state.bob) {
           // Lazy implementation of twirl
           // this.state.twirl -= Math.PI / 8;
 

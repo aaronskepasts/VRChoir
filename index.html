@@ -48,8 +48,8 @@
           [-1.75, 1.25, 1.75],
           [0, 1.25, 2],
           [0, 1.25, -2],
-          [2, 1, 0],
-          [-2, 1, 0],
+          [2, 1.25, 0],
+          [-2, 1.25, 0],
           [0, 5, 9],
           [0, 5, -9],
           [-9, 5, 0],
@@ -101,8 +101,6 @@
 
         const ambient = new THREE.AmbientLight( 0xffffff, 0.1 );
 				scene.add( ambient );
-
-
         
         // lights for small heads/stage
         stagelights.push(newSpotlight(0x2DD220, [-3, 10, 3], 0.3, 0.1, [1.75, 1, -1.75]))
@@ -139,9 +137,17 @@
         listener = new THREE.AudioListener()
         camera.add( listener )
 
+        loadHeads();
         animate();
         
       
+      }
+
+      function loadHeads() {
+        for (let i = 0; i < 12; i++) {
+          let head = new Aaron(group)
+          updateList.push(head)
+        }
       }
 
       function newSpotlight(color, pos, angle, penumbra, obj_pos) {
@@ -238,7 +244,10 @@
       function addHead(size, voice) {
       
         let radius = 1
-        const ron = new Aaron(group);
+        // const ron = new Aaron(group);
+        let ron = updateList[headCounter]
+        ron.visible = true
+        ron.state.bob = true
 
         ron.position.x = startingPositions[headCounter][0]
         ron.position.y = startingPositions[headCounter][1]
@@ -269,7 +278,7 @@
         ron.add( positionalAudio );
         heads.add( ron );  
         headCounter++
-        updateList.push(ron)  
+        // updateList.push(ron)  
       }
     </script>
   </body>
